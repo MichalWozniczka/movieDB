@@ -382,6 +382,11 @@ public class DbBuilder {
 	}
 	
 	public static void main(String[] args) throws SQLException, ClassNotFoundException, IOException, ParseException {
+		Scanner scan = new Scanner(System.in);
+		System.out.println("PostgreSQL Password:");
+		String pass = scan.nextLine();
+		scan.close();
+		
 		System.out.println("loading driver");
 		try {
 			Class.forName("org.postgresql.Driver");
@@ -389,16 +394,22 @@ public class DbBuilder {
 		catch (ClassNotFoundException e) {}
 		System.out.println("driver loaded");
 		System.out.println("Connecting to DB");
+		Connection conn = DriverManager.getConnection("jdbc:postgresql:postgres", "postgres", pass);
 		System.out.println("Connected to DB");
-		
-		/*dropTables(conn, "films");
+
+		dropTables(conn, "films");
+		dropTables(conn, "crew");
 		
 		createTables(conn);
 
+		int counter = 0;
 		System.out.println("Adding titles.");
-		try(BufferedReader br = new BufferedReader(new FileReader("titles.tsv"))) {
+		try(BufferedReader br = new BufferedReader(new FileReader("title.basics.tsv"))) {
 			String line = br.readLine();
 			while((line = br.readLine()) != null) {
+				if(counter++ % 100000 == 0) {
+					System.out.print(".");
+				}
 				insertRowToFilmTableFromBasics(conn, line);
 			}
 		} catch (IOException e) {
@@ -407,9 +418,12 @@ public class DbBuilder {
 		System.out.println("Titles added.");
 		
 		System.out.println("Adding cast and crew.");
-		try(BufferedReader br = new BufferedReader(new FileReader("principals.tsv"))) {
+		try(BufferedReader br = new BufferedReader(new FileReader("title.principals.tsv"))) {
 			String line = br.readLine();
 			while((line = br.readLine()) != null) {
+				if(counter++ % 100000 == 0) {
+					System.out.print(".");
+				}
 				updateRowInFilmTableWithCrew(conn, line);
 			}
 		} catch (IOException e) {
@@ -418,20 +432,26 @@ public class DbBuilder {
 		System.out.println("Cast and crew added.");
 		
 		System.out.println("Adding ratings.");
-		try(BufferedReader br = new BufferedReader(new FileReader("ratings.tsv"))) {
+		try(BufferedReader br = new BufferedReader(new FileReader("title.ratings.tsv"))) {
 			String line = br.readLine();
 			while((line = br.readLine()) != null) {
+				if(counter++ % 100000 == 0) {
+					System.out.print(".");
+				}
 				updateRowInFilmTableWithRatings(conn, line);
 			}
 		} catch (IOException e) {
 			System.out.println("file not found");
 		}
-		System.out.println("Ratings added.");*/
+		System.out.println("Ratings added.");
 		
-		/*System.out.println("Adding regions.");
-		try(BufferedReader br = new BufferedReader(new FileReader("akas.tsv"))) {
+		System.out.println("Adding regions.");
+		try(BufferedReader br = new BufferedReader(new FileReader("title.akas.tsv"))) {
 			String line = br.readLine();
 			while((line = br.readLine()) != null) {
+				if(counter++ % 100000 == 0) {
+					System.out.print(".");
+				}
 				updateRowInFilmTableWithRegions(conn, line);
 			}
 		} catch (IOException e) {
@@ -440,15 +460,18 @@ public class DbBuilder {
 		System.out.println("Regions added.");
 		
 		System.out.println("Adding names.");
-		try(BufferedReader br = new BufferedReader(new FileReader("names.tsv"))) {
+		try(BufferedReader br = new BufferedReader(new FileReader("name.basics.tsv"))) {
 			String line = br.readLine();
 			while((line = br.readLine()) != null) {
+				if(counter++ % 100000 == 0) {
+					System.out.print(".");
+				}
 				insertRowToCastAndCrewTableFromBasics(conn, line);
 			}
 		} catch (IOException e) {
 			System.out.println("file not found");
 		}
-		System.out.println("Names added.");*/
+		System.out.println("Names added.");
 		
 		updateFilmTableWithRTRatings(conn);
 	}
