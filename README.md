@@ -5,8 +5,8 @@ Builds a postgreSQL database of films, IMDb/Rotten Tomatoes ratings, film cast a
 # Database Schema
 
 ```
-films(film\_id (char(9)), title (String), year (Integer), runtime (Integer), genres (String[]), crew\_ids (String[]), imdb (Double), imdb\_numvotes (Integer), rt (Double), rt\_numvotes (Integer), regions (String[]))
-cast_and_crew(name\_id (char(9)), name (String), titles (String[]))
+films(film_id (char(9)), title (String), year (Integer), runtime (Integer), genres (String[]), crew_ids (String[]), imdb (Double), imdb_numvotes (Integer), rt (Double), rt_numvotes (Integer), regions (String[]))
+cast_and_crew(name_id (char(9)), name (String), titles (String[]))
 ```
 
 # Sample Datasets
@@ -20,8 +20,8 @@ To use the 2017 subset of the dataset, run `source use-imdb-2017-subset.sh`. Thi
 # How to run:
 
 ```
-javac -cp lib/\*: -d bin src/moviedb/DbBuilder.java
-java -cp bin:lib/\*: moviedb.DbBuilder
+javac -cp lib/*: -d bin src/moviedb/DbBuilder.java
+java -cp bin:lib/*: moviedb.DbBuilder
 ```
 
 Or, more simply,
