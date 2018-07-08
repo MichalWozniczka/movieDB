@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 
+import javax.net.ssl.SSLHandshakeException;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -330,8 +332,20 @@ public class DbBuilder {
 				int year = Integer.parseInt(rs.getString("year"));
 
 				String url = "https://www.rottentomatoes.com/search/?search=" + ftitle;
-				Document doc = Jsoup.connect(url).get();
-				
+				Document doc;
+				int maxTries = 3;
+				int tryCount = 0;
+				while(true) {
+					try {
+						doc = Jsoup.connect(url).timeout(30*1000).get();
+						break;
+					} catch(SSLHandshakeException e) {
+						if(++tryCount == maxTries) {
+							throw e;
+						}
+					}
+				}
+
 				if(doc.select("h1.center.noresults").size() == 0) {
 					Element main_container = doc.selectFirst("#main_container");
 					Element script = main_container.selectFirst("script");
@@ -340,6 +354,7 @@ public class DbBuilder {
 					JSONObject json = (JSONObject) parser.parse(isolateJSON(script.toString()));
 					
 					if(((long)json.get("movieCount")) == 0) {
+						System.out.println("No Rotten Tomatoes rating found for " + title);
 						continue;
 					}
 					JSONArray movies = (JSONArray) json.get("movies");
