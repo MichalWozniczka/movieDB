@@ -39,7 +39,7 @@ public class DbBuilder {
 				");";
 		
 		String createCrewTable = 
-				"create table crew (" +
+				"create table cast_and_crew (" +
 					"name_id char(9) primary key," +
 					"name text," +
 					"titles text[]" +
@@ -321,7 +321,6 @@ public class DbBuilder {
 		
 		try {
 			while(rs.next()) {
-			//rs.next();
 				String film_id = rs.getString("film_id");
 				String title = rs.getString("title");
 				String ftitle = fixString(title, charToURL);
@@ -329,12 +328,8 @@ public class DbBuilder {
 					continue;
 				}
 				int year = Integer.parseInt(rs.getString("year"));
-				System.out.println(title + " " + year);
 
 				String url = "https://www.rottentomatoes.com/search/?search=" + ftitle;
-				//url = "https://www.rottentomatoes.com/search/?search=hot+rod";
-				//year = 1979;
-				System.out.println(url);
 				Document doc = Jsoup.connect(url).get();
 				
 				if(doc.select("h1.center.noresults").size() == 0) {
@@ -343,7 +338,6 @@ public class DbBuilder {
 					
 					JSONParser parser = new JSONParser();
 					JSONObject json = (JSONObject) parser.parse(isolateJSON(script.toString()));
-					System.out.println(isolateJSON(script.toString()));
 					
 					if(((long)json.get("movieCount")) == 0) {
 						continue;
@@ -357,7 +351,7 @@ public class DbBuilder {
 							Statement stmt2 = conn.createStatement();
 							stmt2.executeUpdate("update films set rt = " + score + " where film_id = '" + film_id + "'");
 							stmt2.close();
-							System.out.println("Score: " + score + "\n");
+							System.out.println("Added Rotten Tomatoes rating for " + title);
 						}
 					}
 				}
@@ -398,7 +392,7 @@ public class DbBuilder {
 		System.out.println("Connected to DB");
 
 		dropTables(conn, "films");
-		dropTables(conn, "crew");
+		dropTables(conn, "cast_and_crew");
 		
 		createTables(conn);
 
@@ -407,7 +401,7 @@ public class DbBuilder {
 		try(BufferedReader br = new BufferedReader(new FileReader("title.basics.tsv"))) {
 			String line = br.readLine();
 			while((line = br.readLine()) != null) {
-				if(counter++ % 100000 == 0) {
+				if(counter++ % 10000 == 0) {
 					System.out.print(".");
 				}
 				insertRowToFilmTableFromBasics(conn, line);
@@ -421,7 +415,7 @@ public class DbBuilder {
 		try(BufferedReader br = new BufferedReader(new FileReader("title.principals.tsv"))) {
 			String line = br.readLine();
 			while((line = br.readLine()) != null) {
-				if(counter++ % 100000 == 0) {
+				if(counter++ % 10000 == 0) {
 					System.out.print(".");
 				}
 				updateRowInFilmTableWithCrew(conn, line);
@@ -435,7 +429,7 @@ public class DbBuilder {
 		try(BufferedReader br = new BufferedReader(new FileReader("title.ratings.tsv"))) {
 			String line = br.readLine();
 			while((line = br.readLine()) != null) {
-				if(counter++ % 100000 == 0) {
+				if(counter++ % 10000 == 0) {
 					System.out.print(".");
 				}
 				updateRowInFilmTableWithRatings(conn, line);
@@ -449,7 +443,7 @@ public class DbBuilder {
 		try(BufferedReader br = new BufferedReader(new FileReader("title.akas.tsv"))) {
 			String line = br.readLine();
 			while((line = br.readLine()) != null) {
-				if(counter++ % 100000 == 0) {
+				if(counter++ % 10000 == 0) {
 					System.out.print(".");
 				}
 				updateRowInFilmTableWithRegions(conn, line);
@@ -463,7 +457,7 @@ public class DbBuilder {
 		try(BufferedReader br = new BufferedReader(new FileReader("name.basics.tsv"))) {
 			String line = br.readLine();
 			while((line = br.readLine()) != null) {
-				if(counter++ % 100000 == 0) {
+				if(counter++ % 10000 == 0) {
 					System.out.print(".");
 				}
 				insertRowToCastAndCrewTableFromBasics(conn, line);
