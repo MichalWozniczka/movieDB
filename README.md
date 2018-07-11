@@ -29,3 +29,8 @@ Or, more simply,
 ```
 source build-db.sh
 ```
+
+# Technologies
+
+Written in Java
+Database used: PostgreSQL
